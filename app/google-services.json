@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "672045750802",
+    "project_id": "team-pulse-b8c4d",
+    "storage_bucket": "team-pulse-b8c4d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:672045750802:android:2b4c0277788067da2a96cb",
+        "android_client_info": {
+          "package_name": "uk.ac.tees.mad.teampulse"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1JKOa25J7nprqYKdGN-2yMo1tn2I1AgY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
