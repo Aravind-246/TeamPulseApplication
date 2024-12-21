@@ -83,7 +83,7 @@ class AuthViewmodel @Inject constructor(
     }
 
 
-    fun SignUp(name: String, email: String, phoneNumber: String, password: String) = viewModelScope.launch {
+    fun SignUp(name: String, username: String, email: String, phoneNumber: String, password: String) = viewModelScope.launch {
         _authstate.value = AuthState.loading
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
@@ -103,7 +103,8 @@ class AuthViewmodel @Inject constructor(
                                     val userData = hashMapOf(
                                         "name" to name,
                                         "phoneNumber" to phoneNumber,
-                                        "profilepictureurl" to ""
+                                        "profilepictureurl" to "",
+                                        "username" to username
                                     )
 
                                     firestore.collection("users")
@@ -155,9 +156,10 @@ class AuthViewmodel @Inject constructor(
                 .addOnSuccessListener {
                     if (it.exists()){
                         val name = it.getString("name") ?: ""
+                        val username = it.getString("username")?: ""
                         val email = it.getString("phoneNumber") ?: ""
                         val imgUrl = it.getString("profilepictureurl") ?: ""
-                        val fetchedUser = CurrentUser(name, email, imgUrl)
+                        val fetchedUser = CurrentUser(name, username, email, imgUrl)
                         _currentUser.value = fetchedUser
                         _authstate.value = AuthState.success
                     }else{

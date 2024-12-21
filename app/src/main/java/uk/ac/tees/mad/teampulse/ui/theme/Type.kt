@@ -42,6 +42,12 @@ val merrisFam = FontFamily(
     Font(googleFont = merris, fontProvider = provider)
 )
 
+val fredoka = GoogleFont("Fredoka")
+
+val fredokaFam = FontFamily(
+    Font(googleFont = fredoka, fontProvider = provider)
+)
+
 
 // Set of Material typography styles to start with
 val Typography = Typography(

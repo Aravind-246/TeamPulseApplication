@@ -1,6 +1,5 @@
 package uk.ac.tees.mad.teampulse.ui.authentication
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Phone
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
@@ -54,6 +54,7 @@ fun SignUpScreen(
     val context = LocalContext.current
 
     var name by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -115,6 +116,7 @@ fun SignUpScreen(
                 fontWeight = FontWeight.Bold,
                 color = Color.Gray
             )
+
             Spacer(modifier = Modifier.weight(0.2f))
             Text(
                 modifier = Modifier.fillMaxWidth(0.88f),
@@ -130,8 +132,8 @@ fun SignUpScreen(
                 shape = RoundedCornerShape(10.dp),
                 leadingIcon = {
                     Icon(
-                        imageVector = Icons.Outlined.Email,
-                        contentDescription = "Email"
+                        imageVector = Icons.Outlined.Person,
+                        contentDescription = "Name"
                     )
                 },
                 placeholder = {
@@ -142,6 +144,35 @@ fun SignUpScreen(
                     )
                 }
             )
+
+            Spacer(modifier = Modifier.weight(0.2f))
+            Text(
+                modifier = Modifier.fillMaxWidth(0.88f),
+                text = "Username",
+                fontFamily = poppinsFam
+            )
+            OutlinedTextField(
+                value = username,
+                onValueChange = {
+                    username = it
+                },
+                modifier = Modifier.fillMaxWidth(0.88f),
+                shape = RoundedCornerShape(10.dp),
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Person,
+                        contentDescription = "username"
+                    )
+                },
+                placeholder = {
+                    Text(
+                        text = "Enter your username",
+                        fontSize = 14.sp,
+                        fontFamily = poppinsFam
+                    )
+                }
+            )
+
             Spacer(modifier = Modifier.weight(0.2f))
             Text(
                 modifier = Modifier.fillMaxWidth(0.88f),
@@ -268,7 +299,7 @@ fun SignUpScreen(
                     .fillMaxWidth(0.88f)
                     .height(45.dp),
                 onClick = {
-                    authViewModel.SignUp(name, email, phoneNumber, password)
+                    authViewModel.SignUp(name, username, email, phoneNumber, password)
                 },
                 shape = RoundedCornerShape(10.dp),
                 colors = ButtonDefaults.buttonColors(

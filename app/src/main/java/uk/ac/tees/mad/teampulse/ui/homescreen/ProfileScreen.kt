@@ -111,7 +111,22 @@ fun ProfileScreen(
                     currentUser?.name?.let {name->
                         Text(
                             modifier = Modifier.padding(8.dp),
-                            text = name,
+                            text = "Name: $name",
+                            fontSize = 15.sp,
+                            fontFamily = poppinsFam
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.weight(0.1f))
+
+                Card(
+                    modifier = Modifier.fillMaxWidth(0.88f)
+                ){
+                    currentUser?.username?.let {username->
+                        Text(
+                            modifier = Modifier.padding(8.dp),
+                            text = "Username: $username",
                             fontSize = 15.sp,
                             fontFamily = poppinsFam
                         )
@@ -126,7 +141,7 @@ fun ProfileScreen(
                     currentUser?.phoneNumber?.let {num->
                         Text(
                             modifier = Modifier.padding(8.dp),
-                            text = num,
+                            text = "Contact: $num",
                             fontSize = 15.sp,
                             fontFamily = poppinsFam
                         )

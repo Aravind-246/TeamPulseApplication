@@ -14,6 +14,7 @@ import uk.ac.tees.mad.teampulse.ui.authentication.SignUpScreen
 import uk.ac.tees.mad.teampulse.ui.homescreen.EditProfileScreen
 import uk.ac.tees.mad.teampulse.ui.homescreen.HomeScreen
 import uk.ac.tees.mad.teampulse.ui.homescreen.ProfileScreen
+import uk.ac.tees.mad.teampulse.ui.tasksscreen.AddingNewTask
 
 
 @Composable
@@ -74,6 +75,9 @@ fun CentralNavigation(
                     authViewmodel,
                     navController
                 )
+            }
+            composable("add_task_screen") {
+                AddingNewTask()
             }
         }
     }
