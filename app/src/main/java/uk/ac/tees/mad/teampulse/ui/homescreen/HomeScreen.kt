@@ -130,9 +130,17 @@ fun HomeTaskTile(){
                 fontFamily = fredokaFam,
                 fontWeight = FontWeight.Bold
             )
+
             Spacer(modifier = Modifier.weight(0.1f))
             Text(
                 text = "The Goal of the task is",
+                fontSize = 15.sp,
+                fontFamily = poppinsFam
+            )
+
+            Spacer(modifier = Modifier.weight(0.1f))
+            Text(
+                text = "Due date: 28/09/2024",
                 fontSize = 15.sp,
                 fontFamily = poppinsFam
             )

@@ -2,6 +2,7 @@ package uk.ac.tees.mad.teampulse.ui.homescreen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -30,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -108,13 +111,25 @@ fun ProfileScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(0.88f)
                 ){
-                    currentUser?.name?.let {name->
+                    Row (
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ){
                         Text(
                             modifier = Modifier.padding(8.dp),
-                            text = "Name: $name",
+                            text = "Name: ",
                             fontSize = 15.sp,
-                            fontFamily = poppinsFam
+                            fontFamily = poppinsFam,
+                            fontWeight = FontWeight.Bold
                         )
+                        currentUser?.name?.let {name->
+                            Text(
+                                modifier = Modifier.padding(8.dp),
+                                text = name,
+                                fontSize = 15.sp,
+                                fontFamily = poppinsFam
+                            )
+                        }
                     }
                 }
 
@@ -123,13 +138,25 @@ fun ProfileScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(0.88f)
                 ){
-                    currentUser?.username?.let {username->
+                    Row (
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ){
                         Text(
                             modifier = Modifier.padding(8.dp),
-                            text = "Username: $username",
+                            text = "Username: ",
                             fontSize = 15.sp,
-                            fontFamily = poppinsFam
+                            fontFamily = poppinsFam,
+                            fontWeight = FontWeight.Bold
                         )
+                        currentUser?.username?.let {username->
+                            Text(
+                                modifier = Modifier.padding(8.dp),
+                                text = username,
+                                fontSize = 15.sp,
+                                fontFamily = poppinsFam
+                            )
+                        }
                     }
                 }
 
@@ -138,13 +165,25 @@ fun ProfileScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(0.88f)
                 ){
-                    currentUser?.phoneNumber?.let {num->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ){
                         Text(
                             modifier = Modifier.padding(8.dp),
-                            text = "Contact: $num",
+                            text = "Contact: ",
                             fontSize = 15.sp,
-                            fontFamily = poppinsFam
+                            fontFamily = poppinsFam,
+                            fontWeight = FontWeight.Bold
                         )
+                        currentUser?.phoneNumber?.let {num->
+                            Text(
+                                modifier = Modifier.padding(8.dp),
+                                text = num,
+                                fontSize = 15.sp,
+                                fontFamily = poppinsFam
+                            )
+                        }
                     }
                 }
 

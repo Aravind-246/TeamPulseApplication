@@ -1,6 +1,7 @@
 package uk.ac.tees.mad.teampulse.ui.authentication
 
 import android.util.Log
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -55,9 +56,11 @@ fun LogInScreen(
     var password by remember {mutableStateOf("")}
     var passwordVisibility by remember { mutableStateOf(false) }
     val authState by authViewModel.authState.collectAsState()
+    var loading by remember { mutableStateOf(false) }
 
     when(authState){
         is AuthState.success->{
+            loading = false
             navController.navigate("home_graph") {
                 popUpTo(navController.graph.startDestinationId) {
                     inclusive = true
@@ -66,12 +69,17 @@ fun LogInScreen(
             }
         }
         is AuthState.failure->{
+            loading = false
             Toast.makeText(context, "Unable to Login! Check the details", Toast.LENGTH_LONG).show()
             email = ""
             password = ""
+            authViewModel.updateAuthState()
+        }
+        is AuthState.loading->{
+            loading = true
         }
         else->{
-
+            loading=false
         }
     }
 
@@ -213,12 +221,16 @@ fun LogInScreen(
                     contentColor = Color.White
                 )
             ) {
-                Text(
-                    text = "Log In",
-                    fontFamily = poppinsFam,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                if (loading){
+
+                }else{
+                    Text(
+                        text = "Log In",
+                        fontFamily = poppinsFam,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
 
 

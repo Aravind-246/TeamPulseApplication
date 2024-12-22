@@ -59,11 +59,13 @@ fun SignUpScreen(
     var phoneNumber by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisibility by remember { mutableStateOf(false) }
+    var loading by remember { mutableStateOf(false) }
 
     val authState by authViewModel.authState.collectAsState()
 
     when(authState){
         is AuthState.success->{
+            loading = false
             navController.navigate("home_graph") {
                 popUpTo(navController.graph.startDestinationId) {
                     inclusive = true
@@ -72,13 +74,20 @@ fun SignUpScreen(
             }
         }
         is AuthState.failure->{
-            Toast.makeText(context, "Unable to Sign Up! Check the details", Toast.LENGTH_LONG).show()
+            loading = false
+            Toast.makeText(context, "Unable to Sign Up! ${(authState as AuthState.failure).error.toString()}", Toast.LENGTH_LONG).show()
             name = ""
             email = ""
             password = ""
+            phoneNumber = ""
+            username = ""
+            authViewModel.updateAuthState()
+        }
+        is AuthState.loading->{
+
         }
         else->{
-
+            loading = false
         }
     }
 
@@ -307,12 +316,17 @@ fun SignUpScreen(
                     contentColor = Color.White
                 )
             ) {
-                Text(
-                    text = "Sign Up",
-                    fontFamily = poppinsFam,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                if (loading){
+
+                }else{
+                    Text(
+                        text = "Sign Up",
+                        fontFamily = poppinsFam,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
             }
 
 

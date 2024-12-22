@@ -83,58 +83,77 @@ class AuthViewmodel @Inject constructor(
     }
 
 
-    fun SignUp(name: String, username: String, email: String, phoneNumber: String, password: String) = viewModelScope.launch {
+    fun SignUp(
+        name: String,
+        username: String,
+        email: String,
+        phoneNumber: String,
+        password: String
+    ) = viewModelScope.launch {
         _authstate.value = AuthState.loading
-        auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val currentUser = auth.currentUser
-                    if (currentUser != null) {
 
-                        val profileUpdates = UserProfileChangeRequest.Builder()
-                            .setDisplayName(name)
-                            .build()
+        // First, check if the username already exists in Firestore
+        firestore.collection("users")
+            .whereEqualTo("username", username)
+            .get()
+            .addOnSuccessListener { documents ->
+                if (documents.isEmpty) {
+                    // If the username is unique, proceed with sign-up
+                    auth.createUserWithEmailAndPassword(email, password)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                val currentUser = auth.currentUser
+                                if (currentUser != null) {
+                                    val profileUpdates = UserProfileChangeRequest.Builder()
+                                        .setDisplayName(name)
+                                        .build()
 
-                        currentUser.updateProfile(profileUpdates)
-                            .addOnCompleteListener { profileTask ->
-                                if (profileTask.isSuccessful) {
+                                    currentUser.updateProfile(profileUpdates)
+                                        .addOnCompleteListener { profileTask ->
+                                            if (profileTask.isSuccessful) {
+                                                val userId = currentUser.uid
+                                                val userData = hashMapOf(
+                                                    "name" to name,
+                                                    "phoneNumber" to phoneNumber,
+                                                    "profilepictureurl" to "",
+                                                    "username" to username
+                                                )
 
-                                    val userId = currentUser.uid
-                                    val userData = hashMapOf(
-                                        "name" to name,
-                                        "phoneNumber" to phoneNumber,
-                                        "profilepictureurl" to "",
-                                        "username" to username
-                                    )
-
-                                    firestore.collection("users")
-                                        .document(userId)
-                                        .set(userData)
-                                        .addOnSuccessListener {
-                                            Log.i("SignUp", "User profile saved to Firestore successfully.")
-                                            fetchCurrentUser()
-                                            _authstate.value = AuthState.success
-                                            _isLoggedIn.value = true
+                                                firestore.collection("users")
+                                                    .document(userId)
+                                                    .set(userData)
+                                                    .addOnSuccessListener {
+                                                        Log.i("SignUp", "User profile saved to Firestore successfully.")
+                                                        fetchCurrentUser()
+                                                        _authstate.value = AuthState.success
+                                                        _isLoggedIn.value = true
+                                                    }
+                                                    .addOnFailureListener { firestoreError ->
+                                                        Log.e("SignUp", "Failed to save user profile to Firestore: ${firestoreError.message}")
+                                                        _authstate.value = AuthState.failure(firestoreError.message.toString())
+                                                    }
+                                            } else {
+                                                Log.e("SignUp", "Failed to update display name: ${profileTask.exception?.message}")
+                                                _authstate.value = AuthState.failure(profileTask.exception?.message.toString())
+                                            }
                                         }
-                                        .addOnFailureListener { firestoreError ->
-                                            Log.e("SignUp", "Failed to save user profile to Firestore: ${firestoreError.message}")
-                                            _authstate.value = AuthState.failure(firestoreError.message.toString())
-                                        }
-                                } else {
-                                    Log.e("SignUp", "Failed to update display name: ${profileTask.exception?.message}")
-                                    _authstate.value = AuthState.failure(profileTask.exception?.message.toString())
                                 }
+                            } else {
+                                val errorMessage = task.exception?.message ?: "Sign-up failed"
+                                _authstate.value = AuthState.failure(errorMessage)
+                                Log.e("SignUp", "Failed to sign up: $errorMessage")
                             }
-                    }
+                        }
+                        .addOnFailureListener { exception ->
+                            _authstate.value = AuthState.failure(exception.message.toString())
+                            Log.e("SignUp", "Error during sign-up: ${exception.message}")
+                        }
                 } else {
-                    val errorMessage = task.exception?.message ?: "Sign-up failed"
-                    _authstate.value = AuthState.failure(errorMessage)
-                    Log.e("SignUp", "Failed to sign up: $errorMessage")
+                    _authstate.value = AuthState.failure("Username is already taken. Please choose a different one.")
                 }
             }
             .addOnFailureListener { exception ->
                 _authstate.value = AuthState.failure(exception.message.toString())
-                Log.e("SignUp", "Error during sign-up: ${exception.message}")
             }
     }
 
@@ -224,5 +243,9 @@ class AuthViewmodel @Inject constructor(
         }else{
             Log.i("Error update:", "Current User is null")
         }
+    }
+
+    fun updateAuthState(){
+        _authstate.value = AuthState.idle
     }
 }
