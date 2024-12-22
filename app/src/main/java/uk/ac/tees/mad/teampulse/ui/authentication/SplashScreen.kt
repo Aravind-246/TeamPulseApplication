@@ -53,7 +53,7 @@ fun CustomSplashScreen(
                 contentDescription = "App Logo"
             )
             Text(
-                text = "Dictionary",
+                text = "TeamPulse",
                 fontSize = 30.sp,
                 fontFamily = poppinsFam,
                 fontWeight = FontWeight.Bold

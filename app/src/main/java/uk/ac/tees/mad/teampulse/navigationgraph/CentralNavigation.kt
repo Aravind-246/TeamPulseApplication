@@ -1,26 +1,27 @@
 package uk.ac.tees.mad.teampulse.navigationgraph
 
-import android.window.SplashScreen
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.internal.composableLambda
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import uk.ac.tees.mad.teampulse.authentication.viewmodel.AuthViewmodel
+import uk.ac.tees.mad.teampulse.taskscomponents.viewmodel.TaskViewModel
 import uk.ac.tees.mad.teampulse.ui.authentication.CustomSplashScreen
 import uk.ac.tees.mad.teampulse.ui.authentication.LogInScreen
 import uk.ac.tees.mad.teampulse.ui.authentication.SignUpScreen
 import uk.ac.tees.mad.teampulse.ui.homescreen.EditProfileScreen
 import uk.ac.tees.mad.teampulse.ui.homescreen.HomeScreen
 import uk.ac.tees.mad.teampulse.ui.homescreen.ProfileScreen
+import uk.ac.tees.mad.teampulse.ui.tasksscreen.AddAssignees
 import uk.ac.tees.mad.teampulse.ui.tasksscreen.AddingNewTask
 
 
 @Composable
 fun CentralNavigation(
     authViewmodel: AuthViewmodel,
-    navController: NavHostController
+    navController: NavHostController,
+    taskViewModel: TaskViewModel
 ){
     NavHost(
         navController = navController,
@@ -77,7 +78,17 @@ fun CentralNavigation(
                 )
             }
             composable("add_task_screen") {
-                AddingNewTask()
+                AddingNewTask(
+                    navController,
+                    taskViewModel
+                )
+            }
+
+            composable("add_assignees") {
+                AddAssignees(
+                    navController,
+                    taskViewModel
+                )
             }
         }
     }

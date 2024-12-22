@@ -27,14 +27,6 @@ val poppinsFam = FontFamily(
     )
 )
 
-val oswald = GoogleFont("Oswald")
-
-val oswaldFam = FontFamily(
-    Font(
-        googleFont = oswald,
-        fontProvider = provider
-    )
-)
 
 val merris = GoogleFont("Merriweather")
 
