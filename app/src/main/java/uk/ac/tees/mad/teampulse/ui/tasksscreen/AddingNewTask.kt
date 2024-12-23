@@ -28,6 +28,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -232,7 +233,6 @@ fun AddingTaskTile(
             )
 
             Spacer(modifier = Modifier.height(10.dp))
-
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -241,29 +241,24 @@ fun AddingTaskTile(
                 fontSize = 18.sp,
                 fontFamily = fredokaFam
             )
-
-            Button(
-                onClick = {
-                    navController.navigate("add_assignees")
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent,
-                    contentColor = Color.DarkGray
-                ),
-                border = BorderStroke(1.dp, Color.Black)
-            ){
-                Text(
-                    text = "Add New Assignees!",
-                    fontSize = 16.sp,
-                    fontFamily = poppinsFam
-                )
-            }
+            Spacer(Modifier.weight(1f))
             LazyColumn(
                 modifier = Modifier.height(100.dp)
             ){
                 item {
                     AssigneesInfo()
                 }
+            }
+            TextButton(
+                onClick = {
+                    navController.navigate("add_assignees")
+                }
+            ) {
+                Text(
+                    text = "Show More",
+                    fontSize = 15.sp,
+                    fontFamily = poppinsFam
+                )
             }
         }
     }

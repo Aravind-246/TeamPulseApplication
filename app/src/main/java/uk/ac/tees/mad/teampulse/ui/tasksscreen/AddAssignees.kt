@@ -1,6 +1,6 @@
 package uk.ac.tees.mad.teampulse.ui.tasksscreen
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
@@ -41,226 +42,137 @@ import uk.ac.tees.mad.teampulse.ui.theme.poppinsFam
 fun AddAssignees(
     navController: NavController,
     taskViewModel: TaskViewModel
-){
-
+) {
     var searchText by remember { mutableStateOf("") }
-    var addedUser by remember { mutableStateOf(emptyList<CurrentUser>()) }
-    val searchedUser by taskViewModel.searchedUsers.collectAsState()
+    var selectedUser by remember { mutableStateOf<CurrentUser?>(null) }
+    var roleText by remember { mutableStateOf("") }
     var isActive by remember { mutableStateOf(false) }
+    val searchedUsers by taskViewModel.searchedUsers.collectAsState()
 
-    if (searchText.isNotEmpty())isActive=true
+    if (searchText.isNotEmpty()) isActive = true
 
-    LazyColumn(
+    Column(
         modifier = Modifier
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ){
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(modifier = Modifier.height(16.dp))
 
-        item {
-            Spacer(modifier = Modifier.height(10.dp))
+        Text(
+            "Assign a New Member to Task",
+            fontSize = 20.sp,
+            fontFamily = poppinsFam,
+            fontWeight = FontWeight.Bold
+        )
 
-            Text(
-                "Add New Memebers for task!!",
-                fontSize = 20.sp,
-                fontFamily = poppinsFam,
-                fontWeight = FontWeight.Bold
-            )
+        Spacer(modifier = Modifier.weight(0.1f))
 
-            Spacer(modifier = Modifier.height(10.dp))
-
-            OutlinedTextField(
-                modifier = Modifier
-                    .fillMaxWidth(0.9f),
-                value = searchText,
-                onValueChange = {
-                    searchText = it
-                },
-                shape = RoundedCornerShape(15.dp),
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Outlined.Search,
-                        contentDescription = "Search Icon"
-                    )
-                },
-                trailingIcon = {
-                    if (isActive){
-                        IconButton(
-                            onClick = {
-                                if (searchText.isNotEmpty())searchText=""
-                                isActive =false
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.Close,
-                                contentDescription = "Close search"
-                            )
-                        }
+        // Username input field
+        OutlinedTextField(
+            modifier = Modifier
+                .fillMaxWidth(),
+            value = searchText,
+            onValueChange = {
+                searchText = it
+                taskViewModel.findByUsername(searchText)
+            },
+            label = { Text("Enter username") },
+            shape = RoundedCornerShape(15.dp),
+            leadingIcon = {
+                Icon(imageVector = Icons.Outlined.Search, contentDescription = "Search Icon")
+            },
+            trailingIcon = {
+                if (isActive) {
+                    IconButton(onClick = {
+                        if (searchText.isNotEmpty()) searchText = ""
+                        isActive = false
+                    }) {
+                        Icon(imageVector = Icons.Outlined.Close, contentDescription = "Close search")
                     }
                 }
+            }
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Display search results
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(150.dp)
+        ) {
+            items(searchedUsers) { user ->
+                SearchResultItem(user, onUserSelected = {
+                    selectedUser = it
+                    searchText = it.username ?: ""
+                    isActive = false
+                })
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Role input field, visible only when a user is selected
+        if (selectedUser != null) {
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                value = roleText,
+                onValueChange = { roleText = it },
+                label = { Text("Assign role") },
+                shape = RoundedCornerShape(15.dp)
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             Button(
+                modifier = Modifier.fillMaxWidth(),
                 onClick = {
-                    navController.popBackStack()
+
                 }
             ) {
-                Text(
-                    text = "Done",
-                    fontSize = 15.sp,
-                    fontFamily = poppinsFam
-                )
+                Text("Add Member")
             }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth(0.9f),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ){
-                SearchedUser(
-                    taskViewModel
-                )
-            }
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth(0.9f),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ){
-                AddedUser(
-                    taskViewModel
-                )
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
         }
 
-    }
-}
+        Spacer(modifier = Modifier.weight(0.1f))
 
-
-
-@Composable
-fun SearchedUser(
-    taskViewModel: TaskViewModel
-){
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp, 5.dp)
-    ){
-        Row(
-            modifier = Modifier.padding(10.dp, 2.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ){
-            Text(
-                modifier = Modifier
-                    .padding(5.dp, 1.dp),
-                text = "Name:",
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                fontFamily = fredokaFam
-            )
-            Text(
-                modifier = Modifier
-                    .padding(5.dp, 1.dp),
-                text = "Anubhav Singh",
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                fontFamily = fredokaFam
-            )
-        }
-        Row(
-            modifier = Modifier.padding(10.dp, 2.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ){
-            Text(
-                modifier = Modifier
-                    .padding(5.dp, 1.dp),
-                text = "Role:",
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                fontFamily = fredokaFam
-            )
-            Text(
-                modifier = Modifier
-                    .padding(5.dp, 1.dp),
-                text = "Android Developer",
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                fontFamily = fredokaFam
-            )
-        }
-    }
-}
-
-
-@Composable
-fun AddedUser(
-    taskViewModel: TaskViewModel
-){
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp, 5.dp)
-    ){
-        Row(
-            modifier = Modifier
-                .padding(10.dp, 2.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ){
-            Text(
-                modifier = Modifier
-                    .padding(5.dp, 1.dp),
-                text = "Name:",
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                fontFamily = fredokaFam
-            )
-            Text(
-                modifier = Modifier
-                    .padding(5.dp, 1.dp),
-                text = "Anubhav Singh",
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                fontFamily = fredokaFam
-            )
-        }
-        Row(
-            modifier = Modifier
-            .padding(10.dp, 2.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ){
-            Text(
-                modifier = Modifier
-                    .padding(5.dp, 1.dp),
-                text = "Role:",
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                fontFamily = fredokaFam
-            )
-            Text(
-                modifier = Modifier
-                    .padding(5.dp, 1.dp),
-                text = "Android Developer",
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                fontFamily = fredokaFam
-            )
-        }
         Button(
-            modifier = Modifier
-                .padding(10.dp, 2.dp)
-                .fillMaxWidth(),
-            onClick = {}
+            onClick = { navController.popBackStack() }
         ) {
             Text(
-                text = "Remove This",
+                text = "Done",
                 fontSize = 15.sp,
                 fontFamily = poppinsFam
             )
         }
+        Spacer(modifier = Modifier.weight(1f))
     }
 }
 
 
+@Composable
+fun SearchResultItem(
+    user: CurrentUser,
+    onUserSelected: (CurrentUser) -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(4.dp)
+            .clickable { onUserSelected(user) }
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = user.username ?: "Unknown User",
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp,
+                fontFamily = fredokaFam
+            )
+        }
+    }
+}
