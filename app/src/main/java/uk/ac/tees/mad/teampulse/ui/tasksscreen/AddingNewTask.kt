@@ -1,6 +1,7 @@
 package uk.ac.tees.mad.teampulse.ui.tasksscreen
 
 import android.icu.text.SimpleDateFormat
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -27,6 +28,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
@@ -39,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -53,54 +56,14 @@ import java.util.Date
 import java.util.Locale
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddingNewTask(
     navController: NavHostController,
     taskViewModel: TaskViewModel
-){
-    Column (
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(10.dp, 30.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ){
+) {
 
-        Spacer(modifier = Modifier.weight(0.2f))
-
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(5.dp, 1.dp),
-            text = "Add a new Task",
-            fontSize = 25.sp,
-            fontFamily = fredokaFam,
-            textAlign = TextAlign.Center
-        )
-
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            item {
-                AddingTaskTile(
-                    navController,
-                    taskViewModel
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.weight(1f))
-    }
-}
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AddingTaskTile(
-    navController: NavHostController,
-    taskViewModel: TaskViewModel
-){
+    val context = LocalContext.current
 
     var title by remember { mutableStateOf("") }
     var goal by remember { mutableStateOf("") }
@@ -109,8 +72,7 @@ fun AddingTaskTile(
     val datePickerState = rememberDatePickerState()
     val selectedDate = datePickerState.selectedDateMillis?.let {
         convertMillisToDate(it)
-    }?: ""
-
+    } ?: ""
 
     if (showDatePicker) {
         Popup(
@@ -133,136 +95,180 @@ fun AddingTaskTile(
         }
     }
 
-
-    Card (
+    Column(
         modifier = Modifier
-            .fillMaxWidth(0.95f),
-        elevation = CardDefaults.elevatedCardElevation(10.dp)
-    ){
-        Column(
+            .fillMaxSize()
+            .padding(10.dp, 30.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        Text(
             modifier = Modifier
-                .padding(10.dp),
+                .fillMaxWidth()
+                .padding(5.dp, 1.dp),
+            text = "Add a new Task",
+            fontSize = 25.sp,
+            fontFamily = fredokaFam,
+            textAlign = TextAlign.Center
+        )
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f, fill = true), // Ensures LazyColumn takes up available space but not the whole screen
             horizontalAlignment = Alignment.CenterHorizontally
-        ){
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(5.dp, 1.dp),
-                text = "Title of the task",
-                fontSize = 18.sp,
-                fontFamily = fredokaFam
-            )
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = title,
-                onValueChange = {
-                    title = it
-                },
-                shape = RoundedCornerShape(15.dp),
-                maxLines = 2
-            )
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(5.dp, 1.dp),
-                text = "Goal of the task",
-                fontSize = 18.sp,
-                fontFamily = fredokaFam
-            )
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = goal,
-                onValueChange = {
-                    goal = it
-                },
-                shape = RoundedCornerShape(15.dp),
-                maxLines = 2
-            )
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(5.dp, 1.dp),
-                text = "Description",
-                fontSize = 18.sp,
-                fontFamily = fredokaFam
-            )
-            OutlinedTextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(250.dp),
-                value = description,
-                onValueChange = {
-                    description = it
-                },
-                shape = RoundedCornerShape(15.dp),
-                maxLines = 10
-            )
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(5.dp, 1.dp),
-                text = "Due Date of the task",
-                fontSize = 18.sp,
-                fontFamily = fredokaFam
-            )
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = selectedDate,
-                onValueChange = {},
-                trailingIcon = {
-                    IconButton(onClick = {
-                        showDatePicker = !showDatePicker
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.DateRange,
-                            contentDescription = "Date Picker"
+        ) {
+            item {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth(0.95f),
+                    elevation = CardDefaults.elevatedCardElevation(10.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .padding(10.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(5.dp, 1.dp),
+                            text = "Title of the task",
+                            fontSize = 18.sp,
+                            fontFamily = fredokaFam
                         )
-                    }
-                },
-                shape = RoundedCornerShape(15.dp),
-                readOnly = true
-            )
+                        OutlinedTextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = title,
+                            onValueChange = {
+                                title = it
+                            },
+                            shape = RoundedCornerShape(15.dp),
+                            maxLines = 2
+                        )
 
-            Spacer(modifier = Modifier.height(10.dp))
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(5.dp, 1.dp),
+                            text = "Goal of the task",
+                            fontSize = 18.sp,
+                            fontFamily = fredokaFam
+                        )
+                        OutlinedTextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = goal,
+                            onValueChange = {
+                                goal = it
+                            },
+                            shape = RoundedCornerShape(15.dp),
+                            maxLines = 2
+                        )
+
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(5.dp, 1.dp),
+                            text = "Description",
+                            fontSize = 18.sp,
+                            fontFamily = fredokaFam
+                        )
+                        OutlinedTextField(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(250.dp),
+                            value = description,
+                            onValueChange = {
+                                description = it
+                            },
+                            shape = RoundedCornerShape(15.dp),
+                            maxLines = 10
+                        )
+
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(5.dp, 1.dp),
+                            text = "Due Date of the task",
+                            fontSize = 18.sp,
+                            fontFamily = fredokaFam
+                        )
+                        OutlinedTextField(
+                            modifier = Modifier.fillMaxWidth(),
+                            value = selectedDate,
+                            onValueChange = {},
+                            trailingIcon = {
+                                IconButton(onClick = {
+                                    showDatePicker = !showDatePicker
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.Default.DateRange,
+                                        contentDescription = "Date Picker"
+                                    )
+                                }
+                            },
+                            shape = RoundedCornerShape(15.dp),
+                            readOnly = true
+                        )
+
+                        Text(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(5.dp, 1.dp),
+                            text = "Assigned to: ",
+                            fontSize = 18.sp,
+                            fontFamily = fredokaFam
+                        )
+                        LazyColumn(
+                            modifier = Modifier.height(200.dp)
+                        ) {
+                            items(10) {
+                                AssigneesInfo()
+                            }
+                        }
+                        TextButton(
+                            onClick = {
+                                navController.navigate("add_assignees")
+                            }
+                        ) {
+                            Text(
+                                text = "Show More",
+                                fontSize = 15.sp,
+                                fontFamily = poppinsFam
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        Button(
+            onClick = {
+                if (
+                    title.isNotEmpty() &&
+                    goal.isNotEmpty() &&
+                    description.isNotEmpty() &&
+                    selectedDate.isNotEmpty()
+                ) {
+                    navController.popBackStack()
+                } else {
+                    Toast.makeText(context, "All the details are mandatory", Toast.LENGTH_LONG).show()
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(1.dp)
+        ) {
             Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(5.dp, 1.dp),
-                text = "Asigned to: ",
+                text = "Create Task",
                 fontSize = 18.sp,
-                fontFamily = fredokaFam
+                fontFamily = poppinsFam
             )
-            Spacer(Modifier.weight(1f))
-            LazyColumn(
-                modifier = Modifier.height(100.dp)
-            ){
-                item {
-                    AssigneesInfo()
-                }
-            }
-            TextButton(
-                onClick = {
-                    navController.navigate("add_assignees")
-                }
-            ) {
-                Text(
-                    text = "Show More",
-                    fontSize = 15.sp,
-                    fontFamily = poppinsFam
-                )
-            }
         }
     }
 }
+
+
 
 
 @Composable

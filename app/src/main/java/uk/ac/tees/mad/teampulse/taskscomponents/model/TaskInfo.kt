@@ -7,5 +7,10 @@ data class TaskInfo(
     val goal: String,
     val description: String,
     val dueDate: String,
-    val assignees: List<CurrentUser>
+    val assignees: List<TaskMembers>
+)
+
+data class TaskMembers(
+    val members: CurrentUser,
+    val role: String
 )

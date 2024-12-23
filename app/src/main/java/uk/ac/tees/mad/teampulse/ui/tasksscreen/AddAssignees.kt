@@ -94,27 +94,28 @@ fun AddAssignees(
             }
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
 
         // Display search results
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(150.dp)
-        ) {
-            items(searchedUsers) { user ->
-                SearchResultItem(user, onUserSelected = {
-                    selectedUser = it
-                    searchText = it.username ?: ""
-                    isActive = false
-                })
+        if (searchText.isNotEmpty()){
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp)
+            ) {
+                items(searchedUsers) { user ->
+                    SearchResultItem(user, onUserSelected = {
+                        selectedUser = it
+                        searchText = it.username ?: ""
+                        isActive = false
+                    })
+                }
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.weight(0.1f))
 
         // Role input field, visible only when a user is selected
-        if (selectedUser != null) {
+        if (selectedUser != null && searchText.isNotEmpty()) {
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -129,7 +130,7 @@ fun AddAssignees(
             Button(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
-
+                    taskViewModel.updateSearchList()
                 }
             ) {
                 Text("Add Member")
@@ -139,7 +140,10 @@ fun AddAssignees(
         Spacer(modifier = Modifier.weight(0.1f))
 
         Button(
-            onClick = { navController.popBackStack() }
+            onClick = {
+                navController.popBackStack()
+                taskViewModel.updateSearchList()
+            }
         ) {
             Text(
                 text = "Done",

@@ -5,4 +5,4 @@ data class CurrentUser(
     val username: String? = null,
     val phoneNumber: String? = null,
     val profileImgUrl: String? = null
-) 
+)

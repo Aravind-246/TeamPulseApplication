@@ -34,4 +34,8 @@ class TaskViewModel @Inject constructor(
             }
     }
 
+    fun updateSearchList(){
+        _searchedUsers.value = emptyList()
+    }
+
 }
