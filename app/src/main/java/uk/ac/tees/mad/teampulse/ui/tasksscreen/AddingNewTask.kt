@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
@@ -33,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,6 +51,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import uk.ac.tees.mad.teampulse.taskscomponents.model.TaskMembers
 import uk.ac.tees.mad.teampulse.taskscomponents.viewmodel.TaskViewModel
 import uk.ac.tees.mad.teampulse.ui.theme.fredokaFam
 import uk.ac.tees.mad.teampulse.ui.theme.poppinsFam
@@ -73,6 +76,7 @@ fun AddingNewTask(
     val selectedDate = datePickerState.selectedDateMillis?.let {
         convertMillisToDate(it)
     } ?: ""
+    val addedMembers by taskViewModel.addedMembers.collectAsState()
 
     if (showDatePicker) {
         Popup(
@@ -222,8 +226,8 @@ fun AddingNewTask(
                         LazyColumn(
                             modifier = Modifier.height(200.dp)
                         ) {
-                            items(10) {
-                                AssigneesInfo()
+                            items(addedMembers){members->
+                                AssigneesInfo(members)
                             }
                         }
                         TextButton(
@@ -251,13 +255,19 @@ fun AddingNewTask(
                     selectedDate.isNotEmpty()
                 ) {
                     navController.popBackStack()
+                    taskViewModel.addNewTask(
+                        title,
+                        goal,
+                        description,
+                        selectedDate,
+                        addedMembers
+                    )
                 } else {
                     Toast.makeText(context, "All the details are mandatory", Toast.LENGTH_LONG).show()
                 }
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(1.dp)
         ) {
             Text(
                 text = "Create Task",
@@ -272,7 +282,9 @@ fun AddingNewTask(
 
 
 @Composable
-fun AssigneesInfo(){
+fun AssigneesInfo(
+    members: TaskMembers
+){
     Card {
         Row(
             verticalAlignment = Alignment.CenterVertically
@@ -285,14 +297,16 @@ fun AssigneesInfo(){
                 fontSize = 18.sp,
                 fontFamily = fredokaFam
             )
-            Text(
-                modifier = Modifier
-                    .padding(5.dp, 1.dp),
-                text = "Anubhav Singh",
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                fontFamily = fredokaFam
-            )
+            members.members.name?.let {
+                Text(
+                    modifier = Modifier
+                        .padding(5.dp, 1.dp),
+                    text = it,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    fontFamily = fredokaFam
+                )
+            }
         }
         Row(
             verticalAlignment = Alignment.CenterVertically
@@ -308,7 +322,7 @@ fun AssigneesInfo(){
             Text(
                 modifier = Modifier
                     .padding(5.dp, 1.dp),
-                text = "Android Developer",
+                text = members.role,
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
                 fontFamily = fredokaFam

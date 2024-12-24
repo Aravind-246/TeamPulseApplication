@@ -1,6 +1,7 @@
 package uk.ac.tees.mad.teampulse.ui.tasksscreen
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Button
@@ -33,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import uk.ac.tees.mad.teampulse.authentication.model.CurrentUser
+import uk.ac.tees.mad.teampulse.taskscomponents.model.TaskMembers
 import uk.ac.tees.mad.teampulse.taskscomponents.viewmodel.TaskViewModel
 import uk.ac.tees.mad.teampulse.ui.theme.fredokaFam
 import uk.ac.tees.mad.teampulse.ui.theme.poppinsFam
@@ -48,6 +51,7 @@ fun AddAssignees(
     var roleText by remember { mutableStateOf("") }
     var isActive by remember { mutableStateOf(false) }
     val searchedUsers by taskViewModel.searchedUsers.collectAsState()
+    val addedMembers by taskViewModel.addedMembers.collectAsState()
 
     if (searchText.isNotEmpty()) isActive = true
 
@@ -94,9 +98,8 @@ fun AddAssignees(
             }
         )
 
-
         // Display search results
-        if (searchText.isNotEmpty()){
+        if (searchText.isNotEmpty()) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -130,10 +133,40 @@ fun AddAssignees(
             Button(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
-                    taskViewModel.updateSearchList()
+                    selectedUser?.let {
+                        taskViewModel.addMemberToTask(it, roleText)
+                        selectedUser = null
+                        roleText = ""
+                        searchText = ""
+                    }
                 }
             ) {
                 Text("Add Member")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Display added members
+        Text(
+            text = "Added Members",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.align(Alignment.Start)
+        )
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+        ) {
+            items(addedMembers) { member ->
+                AddedMemberItem(
+                    member = member,
+                    onRemoveMember = {
+                        taskViewModel.removeMemberFromTask(member.members)
+                    }
+                )
             }
         }
 
@@ -152,6 +185,41 @@ fun AddAssignees(
             )
         }
         Spacer(modifier = Modifier.weight(1f))
+    }
+}
+
+@Composable
+fun AddedMemberItem(
+    member: TaskMembers,
+    onRemoveMember: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(4.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column {
+                Text(
+                    text = member.members.username ?: "Unknown User",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    fontFamily = fredokaFam
+                )
+                Text(
+                    text = "Role: ${member.role}",
+                    fontSize = 14.sp,
+                    fontFamily = poppinsFam
+                )
+            }
+            IconButton(onClick = { onRemoveMember() }) {
+                Icon(imageVector = Icons.Default.Delete, contentDescription = "Remove Member")
+            }
+        }
     }
 }
 
