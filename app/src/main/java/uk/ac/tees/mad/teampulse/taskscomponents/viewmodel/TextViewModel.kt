@@ -22,9 +22,31 @@ class TaskViewModel @Inject constructor(
     private var _searchedUsers = MutableStateFlow<List<CurrentUser>>(emptyList())
     val searchedUsers = _searchedUsers.asStateFlow()
 
-    // Holds the list of members added to the task
     private val _addedMembers = MutableStateFlow<List<TaskMembers>>(emptyList())
     val addedMembers = _addedMembers.asStateFlow()
+
+    private val _tasks = MutableStateFlow<List<TaskInfo>>(emptyList())
+    val tasks = _tasks.asStateFlow()
+
+    init {
+        getAllTasks()
+    }
+
+    private fun getAllTasks() {
+        firestore.collection("tasks")
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                // Map Firestore documents to TaskInfo objects
+                val fetchedTasks = querySnapshot.documents.mapNotNull { document ->
+                    document.toObject(TaskInfo::class.java)
+                }
+                _tasks.value = fetchedTasks
+            }
+            .addOnFailureListener { exception ->
+                // Handle any errors that occur while fetching tasks
+                Log.e("TaskViewModel", "Error fetching tasks", exception)
+            }
+    }
 
     fun addNewTask(
         title: String,

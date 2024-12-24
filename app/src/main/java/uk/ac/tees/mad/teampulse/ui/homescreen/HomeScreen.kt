@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -23,6 +24,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,6 +37,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import uk.ac.tees.mad.teampulse.authentication.viewmodel.AuthViewmodel
+import uk.ac.tees.mad.teampulse.taskscomponents.model.TaskInfo
+import uk.ac.tees.mad.teampulse.taskscomponents.viewmodel.TaskViewModel
 import uk.ac.tees.mad.teampulse.ui.theme.fredokaFam
 import uk.ac.tees.mad.teampulse.ui.theme.merrisFam
 import uk.ac.tees.mad.teampulse.ui.theme.poppinsFam
@@ -44,8 +49,11 @@ import uk.ac.tees.mad.teampulse.ui.theme.poppinsFam
 @Composable
 fun HomeScreen(
     authViewmodel: AuthViewmodel,
-    navController: NavHostController
+    navController: NavHostController,
+    taskViewModel: TaskViewModel
 ){
+
+    val tasks by taskViewModel.tasks.collectAsState()
 
 
 
@@ -96,8 +104,8 @@ fun HomeScreen(
                 verticalArrangement = Arrangement.Center
             ){
                 LazyColumn {
-                    items(100){
-                        HomeTaskTile()
+                    items(tasks){task->
+                        HomeTaskTile(task)
                     }
                 }
             }
@@ -107,7 +115,9 @@ fun HomeScreen(
 
 
 @Composable
-fun HomeTaskTile(){
+fun HomeTaskTile(
+    taskInfo: TaskInfo
+){
     Card(
         modifier = Modifier
             .padding(0.dp, 10.dp)
@@ -125,7 +135,7 @@ fun HomeTaskTile(){
                 .padding(10.dp, 10.dp)
         ) {
             Text(
-                text = "This is the title of the Task",
+                text = taskInfo.title,
                 fontSize = 20.sp,
                 fontFamily = fredokaFam,
                 fontWeight = FontWeight.Bold
@@ -133,14 +143,14 @@ fun HomeTaskTile(){
 
             Spacer(modifier = Modifier.weight(0.1f))
             Text(
-                text = "The Goal of the task is",
+                text = taskInfo.goal,
                 fontSize = 15.sp,
                 fontFamily = poppinsFam
             )
 
             Spacer(modifier = Modifier.weight(0.1f))
             Text(
-                text = "Due date: 28/09/2024",
+                text = "Due date: ${taskInfo.dueDate}",
                 fontSize = 15.sp,
                 fontFamily = poppinsFam
             )

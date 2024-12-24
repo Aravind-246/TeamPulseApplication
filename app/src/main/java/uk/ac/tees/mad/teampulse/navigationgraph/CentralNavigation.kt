@@ -61,7 +61,8 @@ fun CentralNavigation(
             composable("home_screen") {
                 HomeScreen(
                     authViewmodel,
-                    navController
+                    navController,
+                    taskViewModel
                 )
             }
 
