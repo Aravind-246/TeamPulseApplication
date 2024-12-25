@@ -72,7 +72,6 @@ fun AddAssignees(
 
         Spacer(modifier = Modifier.weight(0.1f))
 
-        // Username input field
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth(),
@@ -117,7 +116,6 @@ fun AddAssignees(
 
         Spacer(modifier = Modifier.weight(0.1f))
 
-        // Role input field, visible only when a user is selected
         if (selectedUser != null && searchText.isNotEmpty()) {
             OutlinedTextField(
                 modifier = Modifier
@@ -147,7 +145,6 @@ fun AddAssignees(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Display added members
         Text(
             text = "Added Members",
             fontSize = 18.sp,

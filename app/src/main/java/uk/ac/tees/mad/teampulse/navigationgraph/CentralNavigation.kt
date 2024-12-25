@@ -2,10 +2,14 @@ package uk.ac.tees.mad.teampulse.navigationgraph
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import androidx.navigation.navArgument
+import com.google.gson.Gson
 import uk.ac.tees.mad.teampulse.authentication.viewmodel.AuthViewmodel
+import uk.ac.tees.mad.teampulse.taskscomponents.model.TaskInfo
 import uk.ac.tees.mad.teampulse.taskscomponents.viewmodel.TaskViewModel
 import uk.ac.tees.mad.teampulse.ui.authentication.CustomSplashScreen
 import uk.ac.tees.mad.teampulse.ui.authentication.LogInScreen
@@ -15,6 +19,7 @@ import uk.ac.tees.mad.teampulse.ui.homescreen.HomeScreen
 import uk.ac.tees.mad.teampulse.ui.homescreen.ProfileScreen
 import uk.ac.tees.mad.teampulse.ui.tasksscreen.AddAssignees
 import uk.ac.tees.mad.teampulse.ui.tasksscreen.AddingNewTask
+import uk.ac.tees.mad.teampulse.ui.tasksscreen.TaskDetailsScreen
 
 
 @Composable
@@ -91,6 +96,18 @@ fun CentralNavigation(
                     taskViewModel
                 )
             }
+
+            composable(
+                route = "task_details/{taskInfo}",
+                arguments = listOf(navArgument("taskInfo") {
+                    type = NavType.StringType
+                })
+            ) { backStackEntry ->
+                val taskJson = backStackEntry.arguments?.getString("taskInfo")
+                val taskInfo = Gson().fromJson(taskJson, TaskInfo::class.java)
+                TaskDetailsScreen(taskInfo)
+            }
+
         }
     }
 

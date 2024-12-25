@@ -85,6 +85,8 @@ dependencies {
 
     //Extended Material Icons
     implementation("androidx.compose.material:material-icons-extended:1.7.2")
+    implementation("com.google.code.gson:gson:2.8.9")
+
 
     //Dagger Hilt implementation dependency
     implementation("com.google.dagger:hilt-android:2.51.1")

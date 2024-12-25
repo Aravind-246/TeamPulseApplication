@@ -119,7 +119,7 @@ fun AddingNewTask(
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f, fill = true), // Ensures LazyColumn takes up available space but not the whole screen
+                .weight(1f, fill = true),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {

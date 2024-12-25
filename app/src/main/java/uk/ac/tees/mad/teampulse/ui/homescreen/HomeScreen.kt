@@ -1,5 +1,6 @@
 package uk.ac.tees.mad.teampulse.ui.homescreen
 
+import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,7 +13,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,19 +30,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import com.google.gson.Gson
 import uk.ac.tees.mad.teampulse.authentication.viewmodel.AuthViewmodel
 import uk.ac.tees.mad.teampulse.taskscomponents.model.TaskInfo
 import uk.ac.tees.mad.teampulse.taskscomponents.viewmodel.TaskViewModel
 import uk.ac.tees.mad.teampulse.ui.theme.fredokaFam
 import uk.ac.tees.mad.teampulse.ui.theme.merrisFam
 import uk.ac.tees.mad.teampulse.ui.theme.poppinsFam
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,8 +51,6 @@ fun HomeScreen(
 ){
 
     val tasks by taskViewModel.tasks.collectAsState()
-
-
 
     Scaffold(
         topBar = {
@@ -101,11 +96,11 @@ fun HomeScreen(
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Top
             ){
                 LazyColumn {
                     items(tasks){task->
-                        HomeTaskTile(task)
+                        HomeTaskTile(task,navController)
                     }
                 }
             }
@@ -116,7 +111,8 @@ fun HomeScreen(
 
 @Composable
 fun HomeTaskTile(
-    taskInfo: TaskInfo
+    taskInfo: TaskInfo,
+    navController: NavHostController
 ){
     Card(
         modifier = Modifier
@@ -127,7 +123,11 @@ fun HomeTaskTile(
         ),
         elevation = CardDefaults.elevatedCardElevation(
             10.dp
-        )
+        ),
+        onClick = {
+            val taskJson = Uri.encode(Gson().toJson(taskInfo))
+            navController.navigate("task_details/$taskJson")
+        }
     ){
         Column(
             modifier = Modifier
