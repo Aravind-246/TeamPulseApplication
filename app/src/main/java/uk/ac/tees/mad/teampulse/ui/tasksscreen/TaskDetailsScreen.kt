@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -166,6 +167,19 @@ fun Members(
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
                 fontFamily = fredokaFam
+            )
+        }
+
+        TextButton(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
+
+            }
+        ) {
+            Text(
+                text = "Edit members!",
+                fontSize = 15.sp,
+                fontFamily = poppinsFam
             )
         }
     }
