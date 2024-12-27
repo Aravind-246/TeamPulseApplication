@@ -3,6 +3,7 @@ package uk.ac.tees.mad.teampulse.taskscomponents.model
 import uk.ac.tees.mad.teampulse.authentication.model.CurrentUser
 
 data class TaskInfo(
+    val id: String = "",
     val title: String = "",
     val goal: String = "",
     val description: String = "",

@@ -1,6 +1,7 @@
 package uk.ac.tees.mad.teampulse.ui.tasksscreen
 
 import android.icu.text.SimpleDateFormat
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -51,6 +52,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import com.google.gson.Gson
 import uk.ac.tees.mad.teampulse.taskscomponents.model.TaskMembers
 import uk.ac.tees.mad.teampulse.taskscomponents.viewmodel.TaskViewModel
 import uk.ac.tees.mad.teampulse.ui.theme.fredokaFam
@@ -227,7 +229,7 @@ fun AddingNewTask(
                             modifier = Modifier.height(200.dp)
                         ) {
                             items(addedMembers){members->
-                                AssigneesInfo(members)
+                                AssigneesInfo(members, navController)
                             }
                         }
                         TextButton(
@@ -283,9 +285,15 @@ fun AddingNewTask(
 
 @Composable
 fun AssigneesInfo(
-    members: TaskMembers
+    members: TaskMembers,
+    navController: NavHostController
 ){
-    Card {
+    Card(
+        onClick = {
+            val memberJson = Uri.encode(Gson().toJson(members))
+            navController.navigate("member_details_screen/$memberJson")
+        }
+    ){
         Row(
             verticalAlignment = Alignment.CenterVertically
         ){

@@ -1,6 +1,10 @@
 package uk.ac.tees.mad.teampulse.taskscomponents.viewmodel
 
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -18,8 +22,16 @@ class TaskViewModel @Inject constructor(
     private val firestore: FirebaseFirestore
 ) : ViewModel() {
 
+    private var _flag = MutableStateFlow(true)
+    val flag = _flag.asStateFlow()
+
     private var _searchResult = MutableStateFlow<Boolean?>(null)
-    private var _searchedUsers = MutableStateFlow<List<CurrentUser>>(emptyList())
+    val searchResult = _searchResult.asStateFlow()
+
+    private val _currentTask = MutableStateFlow<TaskInfo?>(null)
+    val currentTask = _currentTask.asStateFlow()
+
+    private val _searchedUsers = MutableStateFlow<List<CurrentUser>>(emptyList())
     val searchedUsers = _searchedUsers.asStateFlow()
 
     private val _addedMembers = MutableStateFlow<List<TaskMembers>>(emptyList())
@@ -32,18 +44,17 @@ class TaskViewModel @Inject constructor(
         getAllTasks()
     }
 
+
     private fun getAllTasks() {
         firestore.collection("tasks")
             .get()
             .addOnSuccessListener { querySnapshot ->
-                // Map Firestore documents to TaskInfo objects
                 val fetchedTasks = querySnapshot.documents.mapNotNull { document ->
                     document.toObject(TaskInfo::class.java)
                 }
                 _tasks.value = fetchedTasks
             }
             .addOnFailureListener { exception ->
-                // Handle any errors that occur while fetching tasks
                 Log.e("TaskViewModel", "Error fetching tasks", exception)
             }
     }
@@ -55,8 +66,10 @@ class TaskViewModel @Inject constructor(
         dueDate: String,
         members: List<TaskMembers>
     ) {
-        // Create the task object
+        val documentReference = firestore.collection("tasks").document()
+        val taskId = documentReference.id
         val taskInfo = TaskInfo(
+            id = taskId,
             title = title,
             goal = goal,
             description = description,
@@ -64,31 +77,35 @@ class TaskViewModel @Inject constructor(
             assignees = members
         )
 
-        // Add task to the "tasks" collection
-        firestore.collection("tasks")
-            .add(taskInfo)
-            .addOnSuccessListener { documentReference ->
-                val taskId = documentReference.id
+        documentReference
+            .set(taskInfo)
+            .addOnSuccessListener {
                 Log.d("TaskViewModel", "Task added with ID: $taskId")
 
-                // For each member, update the user document with task info
                 members.forEach { member ->
                     val userRef = firestore.collection("users").document(member.members.username ?: "")
 
-                    userRef.update("tasks", FieldValue.arrayUnion(taskId))
-                        .addOnSuccessListener {
-                            Log.d("TaskViewModel", "Task associated with user: ${member.members.username}")
+                    userRef.get().addOnSuccessListener { userDocument ->
+                        if (userDocument.exists()) {
+                            userRef.update("tasks", FieldValue.arrayUnion(taskId))
+                                .addOnSuccessListener {
+                                    Log.d("TaskViewModel", "Task associated with user: ${member.members.username}")
+                                }
+                                .addOnFailureListener { e ->
+                                    Log.w("TaskViewModel", "Error associating task with user: ${member.members.username}", e)
+                                }
+                        } else {
+                            Log.w("TaskViewModel", "User document does not exist: ${member.members.username}")
                         }
-                        .addOnFailureListener { e ->
-                            Log.w("TaskViewModel", "Error associating task with user: ${member.members.username}", e)
-                        }
+                    }.addOnFailureListener { e ->
+                        Log.w("TaskViewModel", "Error fetching user document: ${member.members.username}", e)
+                    }
                 }
             }
             .addOnFailureListener { e ->
                 Log.w("TaskViewModel", "Error adding task", e)
             }
     }
-
 
 
     fun findByUsername(query: String) {
@@ -116,5 +133,26 @@ class TaskViewModel @Inject constructor(
 
     fun removeMemberFromTask(user: CurrentUser) {
         _addedMembers.value = _addedMembers.value.filter { it.members.username != user.username }
+    }
+
+    fun initializeAddedMembers(taskMembersList: List<TaskMembers>) {
+        _addedMembers.value = taskMembersList
+
+    }
+
+    fun updateTaskMembersInFirestore(taskId: String) {
+        val updatedMembers = _addedMembers.value
+        firestore.collection("tasks").document(taskId)
+            .update("assignees", updatedMembers)
+            .addOnSuccessListener {
+                Log.i("Added List to task: ", "The List is updated${it}")
+            }
+            .addOnFailureListener {
+                Log.i("Added List to task: ", "The List is not updated ${it.localizedMessage}")
+            }
+    }
+
+    fun updateFlag(){
+        _flag.value = false
     }
 }

@@ -1,5 +1,6 @@
 package uk.ac.tees.mad.teampulse.ui.tasksscreen
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,10 +43,12 @@ import uk.ac.tees.mad.teampulse.ui.theme.fredokaFam
 import uk.ac.tees.mad.teampulse.ui.theme.poppinsFam
 
 
+
 @Composable
-fun AddAssignees(
+fun UpdateMembers(
     navController: NavController,
-    taskViewModel: TaskViewModel
+    taskViewModel: TaskViewModel,
+    taskId: String
 ) {
     var searchText by remember { mutableStateOf("") }
     var selectedUser by remember { mutableStateOf<CurrentUser?>(null) }
@@ -104,7 +108,7 @@ fun AddAssignees(
                     .height(100.dp)
             ) {
                 items(searchedUsers) { user ->
-                    SearchResultItem(user, onUserSelected = {
+                    SearchResult(user, onUserSelected = {
                         selectedUser = it
                         searchText = it.username ?: ""
                         isActive = false
@@ -157,7 +161,7 @@ fun AddAssignees(
                 .height(200.dp)
         ) {
             items(addedMembers) { member ->
-                AddedMemberItem(
+                AddedMember(
                     member = member,
                     onRemoveMember = {
                         taskViewModel.removeMemberFromTask(member.members)
@@ -171,6 +175,8 @@ fun AddAssignees(
         Button(
             onClick = {
                 navController.popBackStack()
+                Log.i("The task id: ", taskId)
+                taskViewModel.updateTaskMembersInFirestore(taskId)
                 taskViewModel.updateSearchList()
             }
         ) {
@@ -180,12 +186,13 @@ fun AddAssignees(
                 fontFamily = poppinsFam
             )
         }
+
         Spacer(modifier = Modifier.weight(1f))
     }
 }
 
 @Composable
-fun AddedMemberItem(
+fun AddedMember(
     member: TaskMembers,
     onRemoveMember: () -> Unit
 ) {
@@ -219,9 +226,8 @@ fun AddedMemberItem(
     }
 }
 
-
 @Composable
-fun SearchResultItem(
+fun SearchResult(
     user: CurrentUser,
     onUserSelected: (CurrentUser) -> Unit
 ) {
@@ -244,3 +250,4 @@ fun SearchResultItem(
         }
     }
 }
+

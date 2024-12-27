@@ -1,5 +1,6 @@
 package uk.ac.tees.mad.teampulse.navigationgraph
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -10,6 +11,7 @@ import androidx.navigation.navArgument
 import com.google.gson.Gson
 import uk.ac.tees.mad.teampulse.authentication.viewmodel.AuthViewmodel
 import uk.ac.tees.mad.teampulse.taskscomponents.model.TaskInfo
+import uk.ac.tees.mad.teampulse.taskscomponents.model.TaskMembers
 import uk.ac.tees.mad.teampulse.taskscomponents.viewmodel.TaskViewModel
 import uk.ac.tees.mad.teampulse.ui.authentication.CustomSplashScreen
 import uk.ac.tees.mad.teampulse.ui.authentication.LogInScreen
@@ -19,7 +21,9 @@ import uk.ac.tees.mad.teampulse.ui.homescreen.HomeScreen
 import uk.ac.tees.mad.teampulse.ui.homescreen.ProfileScreen
 import uk.ac.tees.mad.teampulse.ui.tasksscreen.AddAssignees
 import uk.ac.tees.mad.teampulse.ui.tasksscreen.AddingNewTask
+import uk.ac.tees.mad.teampulse.ui.tasksscreen.MemberDetailsScreen
 import uk.ac.tees.mad.teampulse.ui.tasksscreen.TaskDetailsScreen
+import uk.ac.tees.mad.teampulse.ui.tasksscreen.UpdateMembers
 
 
 @Composable
@@ -105,8 +109,47 @@ fun CentralNavigation(
             ) { backStackEntry ->
                 val taskJson = backStackEntry.arguments?.getString("taskInfo")
                 val taskInfo = Gson().fromJson(taskJson, TaskInfo::class.java)
-                TaskDetailsScreen(taskInfo)
+                TaskDetailsScreen(
+                    taskInfo,
+                    navController,
+                    taskViewModel
+                )
             }
+
+            composable(
+                route = "member_details_screen/{memberJson}",
+                arguments = listOf(navArgument("memberJson") {
+                    type = NavType.StringType
+                })
+            ) { backStackEntry ->
+                val memberJson = backStackEntry.arguments?.getString("memberJson")
+                memberJson?.let {
+                    MemberDetailsScreen(
+                        navController = navController,
+                        memberJson = it
+                    )
+                }
+            }
+
+            composable(
+                route = "update_members_screen/{taskId}",
+                arguments = listOf(navArgument("taskId") {
+                    type = NavType.StringType
+                })
+            ) { backStackEntry ->
+                var taskId = backStackEntry.arguments?.getString("taskId")
+                taskId = taskId?.trim('"')
+                Log.d("TaskId: ", taskId?:"")
+
+                taskId?.let {
+                    UpdateMembers(
+                        navController = navController,
+                        taskViewModel = taskViewModel,
+                        taskId = it
+                    )
+                }
+            }
+
 
         }
     }
