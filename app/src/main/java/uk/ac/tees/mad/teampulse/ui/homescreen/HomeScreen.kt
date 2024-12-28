@@ -25,6 +25,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -50,6 +51,11 @@ fun HomeScreen(
     navController: NavHostController,
     taskViewModel: TaskViewModel
 ){
+
+    LaunchedEffect(Unit){
+        taskViewModel.getAllTasks()
+        Log.i("The state","The states are reset")
+    }
 
     val tasks by taskViewModel.tasks.collectAsState()
 
@@ -79,6 +85,7 @@ fun HomeScreen(
             FloatingActionButton(
                 onClick = {
                     navController.navigate("add_task_screen")
+                    taskViewModel.updateAddedMember()
                 },
                 shape = CircleShape
             ) {
@@ -101,7 +108,7 @@ fun HomeScreen(
             ){
                 LazyColumn {
                     items(tasks){task->
-                        HomeTaskTile(task,navController)
+                        HomeTaskTile(task,navController,taskViewModel)
                     }
                 }
             }
@@ -113,7 +120,8 @@ fun HomeScreen(
 @Composable
 fun HomeTaskTile(
     taskInfo: TaskInfo,
-    navController: NavHostController
+    navController: NavHostController,
+    taskViewModel: TaskViewModel
 ){
     Card(
         modifier = Modifier

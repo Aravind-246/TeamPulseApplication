@@ -48,7 +48,6 @@ fun TaskDetailsScreen(
 
     if (flag){
         taskViewModel.initializeAddedMembers(taskInfo.assignees)
-        Log.d("The addedMember: ", addedMembers.toString())
     }
     var text by remember { mutableStateOf("") }
 
@@ -165,7 +164,7 @@ fun TaskDetailsScreen(
 
         Button(
             onClick = {
-                taskViewModel.initializeAddedMembers(taskInfo.assignees)
+                taskViewModel.updateAddedMember()
                 navController.popBackStack()
             }
         ) {
