@@ -1,5 +1,6 @@
 package uk.ac.tees.mad.teampulse.ui.tasksscreen
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,8 +14,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,7 +48,14 @@ fun TaskDetailsScreen(
 
     if (flag){
         taskViewModel.initializeAddedMembers(taskInfo.assignees)
-        Lo
+        Log.d("The addedMember: ", addedMembers.toString())
+    }
+    var text by remember { mutableStateOf("") }
+
+    if (DueDate(taskInfo.dueDate)){
+        text = "Not Completed!"
+    }else{
+        text = "Due Date Exceeded"
     }
 
     Column(
@@ -112,6 +122,19 @@ fun TaskDetailsScreen(
         )
         Text(
             text = taskInfo.dueDate,
+            fontSize = 18.sp,
+            fontFamily = poppinsFam
+        )
+
+        Spacer(modifier = Modifier.weight(0.1f))
+
+        Text(
+            text = "Status:",
+            fontSize = 18.sp,
+            fontFamily = poppinsFam
+        )
+        Text(
+            text = text,
             fontSize = 18.sp,
             fontFamily = poppinsFam
         )
@@ -207,6 +230,19 @@ fun Members(
                 )
             }
         }
+    }
+}
+
+fun DueDate(dueDateString: String): Boolean {
+    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    val dueDate: Date
+    return try {
+        dueDate = dateFormat.parse(dueDateString) ?: return false
+        val currentDate = Date()
+        dueDate.before(currentDate)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        false
     }
 }
 
